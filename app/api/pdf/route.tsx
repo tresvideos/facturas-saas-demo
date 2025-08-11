@@ -1,4 +1,5 @@
 export const runtime = 'nodejs';
+
 import { NextRequest, NextResponse } from 'next/server';
 import { Document, Page, Text, View, StyleSheet } from '@react-pdf/renderer';
 
@@ -15,7 +16,7 @@ const styles = StyleSheet.create({
   totalRow: { flexDirection: 'row', justifyContent: 'space-between', fontSize: 12 }
 });
 
-function InvoicePDF({inv}: any){
+function InvoicePDF({ inv }: any) {
   return (
     <Document>
       <Page size="A4" style={styles.page}>
@@ -40,7 +41,7 @@ function InvoicePDF({inv}: any){
           <Text style={styles.th}>Precio</Text>
           <Text style={styles.th}>IVA</Text>
         </View>
-        {inv.items.map((it:any, idx:number)=>(
+        {inv.items.map((it: any, idx: number) => (
           <View key={idx} style={styles.tr}>
             <Text style={styles.td}>{it.description}</Text>
             <Text style={styles.td}>{it.qty}</Text>
@@ -59,11 +60,12 @@ function InvoicePDF({inv}: any){
   );
 }
 
-export async function POST(req: NextRequest){
+export async function POST(req: NextRequest) {
   const inv = await req.json();
   const ReactPDF = await import('@react-pdf/renderer');
-  const pdfStream = await ReactPDF.pdf(<InvoicePDF inv={inv}/>).toBuffer();
-  return new NextResponse(pdfStream, {
+  const pdfBuffer = await ReactPDF.pdf(<InvoicePDF inv={inv} />).toBuffer();
+
+  return new NextResponse(pdfBuffer as any, {
     headers: {
       'Content-Type': 'application/pdf',
       'Content-Disposition': `attachment; filename="${inv.number}.pdf"`
