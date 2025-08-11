@@ -1,3 +1,4 @@
+export const runtime = 'nodejs';
 import { NextRequest, NextResponse } from 'next/server';
 import { Document, Page, Text, View, StyleSheet } from '@react-pdf/renderer';
 
