@@ -1,11 +1,16 @@
-# FacturaKit — DEMO v4
-- **Logo** de empresa en editor y PDF
-- Campos extra: email, teléfono, web, **IBAN**, notas
-- **Home** con logo genérico, instrucciones, reviews y badges
-- **Panel** con **sidebar** (Facturas, Suscripción, Instrucciones)
-- Listo para Vercel
+# FacturaKit — DEMO v5
+- Previsualización PDF en vivo en el editor
+- Corrección de overflow de texto en PDF
+- Home con imagen, reviews con estrellas y avatares, y FAQ
+- Login/Signup con Google (NextAuth) + /login
+- Guardado cliente: /editor y /dashboard requieren login (client-side)
+- Panel con Preview, Editar, Descargar, Eliminar
 
-Instalar:
-1) `npm install`
-2) `npm run dev`
-3) http://localhost:3000
+## Auth (Google)
+En Vercel > Project > Settings > Environment Variables:
+- GOOGLE_CLIENT_ID
+- GOOGLE_CLIENT_SECRET
+- NEXTAUTH_SECRET (cualquiera, recomendado `openssl rand -hex 32`)
+
+Callback URL: https://TU_DOMINIO.vercel.app/api/auth/callback/google
+

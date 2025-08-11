@@ -2,17 +2,18 @@
 import Sidebar from '@/components/Sidebar';
 import { useApp } from '@/lib/store';
 import Link from 'next/link';
+import useRequireAuth from '@/lib/authGuard';
 
 export default function Dashboard(){
   const { invoices, markPaid, removeInvoice } = useApp();
+  const authed = useRequireAuth();
+  if(!authed) return null;
 
-  async function download(id: string){
-    const inv = invoices.find(i=>i.id===id);
-    if(!inv) return;
+  async function download(inv: any){
     if(!inv.paid050){
       const ok = confirm('Demo de pago: se simulará un cobro de 0,50€ y luego podrás descargar. ¿Continuar?');
       if(!ok) return;
-      markPaid(id);
+      markPaid(inv.id);
       alert('Pago demo realizado. (No es un cobro real)');
     }
     const res = await fetch('/api/pdf', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(inv)});
@@ -55,9 +56,11 @@ export default function Dashboard(){
                     <td>{inv.buyer.name}</td>
                     <td>{inv.total.toFixed(2)} €</td>
                     <td>{inv.theme || 'minimal'}</td>
-                    <td>{inv.paid050 ? 'Pagada 0,50€ (demo)' : 'Pendiente de pago'}</td>
+                    <td>{inv.paid050 ? 'Pagada 0,50€ (demo)' : 'Pendiente'}</td>
                     <td className="text-right space-x-2">
-                      <button className="btn btn-ghost" onClick={()=>download(inv.id)}>Descargar PDF</button>
+                      <Link className="btn btn-ghost" href={`/preview/${inv.id}`}>Preview</Link>
+                      <Link className="btn btn-ghost" href={`/edit/${inv.id}`}>Editar</Link>
+                      <button className="btn btn-ghost" onClick={()=>download(inv)}>Descargar</button>
                       <button className="btn btn-ghost" onClick={()=>removeInvoice(inv.id)}>Eliminar</button>
                     </td>
                   </tr>

@@ -1,6 +1,7 @@
 import './globals.css';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import Providers from '../components/Providers';
 
 export const metadata = {
   title: 'FacturaKit — Plantillas de Factura',
@@ -11,9 +12,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }){
   return (
     <html lang="es">
       <body>
-        <Header/>
-        <main className="container py-10 hero">{children}</main>
-        <Footer/>
+        <Providers>
+          <Header/>
+          <main className="container py-10 hero">{children}</main>
+          <Footer/>
+        </Providers>
       </body>
     </html>
   );

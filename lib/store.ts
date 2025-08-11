@@ -32,11 +32,12 @@ type State = {
   invoices: Invoice[];
   setUser: (u: State['user']) => void;
   saveInvoice: (inv: Invoice) => void;
+  updateInvoice: (inv: Invoice) => void;
   markPaid: (id: string) => void;
   removeInvoice: (id: string) => void;
 };
 
-const key = 'fsd-state-v4';
+const key = 'fsd-state-v5';
 
 function load(){
   if(typeof window === 'undefined') return {user:null,invoices:[]};
@@ -55,8 +56,15 @@ export const useApp = create<State>((set,get)=> ({
   },
   saveInvoice(inv){
     const list = [...get().invoices];
-    const i = list.findIndex(x=>x.id===inv.id);
-    if(i>=0) list[i]=inv; else list.unshift(inv);
+    list.unshift(inv);
+    set({ invoices: list });
+    if(typeof window !== 'undefined'){
+      const s = { ...load(), invoices: list };
+      localStorage.setItem(key, JSON.stringify(s));
+    }
+  },
+  updateInvoice(inv){
+    const list = get().invoices.map(i => i.id===inv.id ? inv : i);
     set({ invoices: list });
     if(typeof window !== 'undefined'){
       const s = { ...load(), invoices: list };

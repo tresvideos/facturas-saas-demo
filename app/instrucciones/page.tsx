@@ -14,7 +14,7 @@ export default function Instrucciones(){
         <h2 className="text-xl font-medium mb-2">Consejos</h2>
         <ul className="list-disc ml-6 space-y-2 text-gray-700">
           <li>Usa un logo en PNG con fondo transparente para mejor resultado.</li>
-          <li>Comprueba el <strong>número de factura</strong> sigue tu serie.</li>
+          <li>Comprueba que el <strong>número de factura</strong> siga tu serie.</li>
           <li>Añade tu <strong>IBAN</strong> si aceptas transferencia.</li>
           <li>Incluye <strong>notas</strong> con condiciones de pago o agradecimientos.</li>
         </ul>

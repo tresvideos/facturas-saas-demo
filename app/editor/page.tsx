@@ -1,11 +1,15 @@
 'use client';
 export const dynamic = 'force-dynamic';
 
-import React, { Suspense, useMemo, useState } from 'react';
+import React, { Suspense, useMemo, useState, useEffect } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useApp, type Invoice, type Item } from '@/lib/store';
 import { calcTotals } from '@/lib/calc';
+import { PDFViewer } from '@react-pdf/renderer';
+import InvoicePDF from '@/components/InvoicePDF';
+import { useSession } from 'next-auth/react';
+import useRequireAuth from '@/lib/authGuard';
 
 function newId(){ return Math.random().toString(36).slice(2); }
 
@@ -14,8 +18,10 @@ function EditorInner(){
   const router = useRouter();
   const tpl = params.get('tpl') || 'minimal';
   const { saveInvoice } = useApp();
+  const authed = useRequireAuth();
+  if(!authed) return null;
 
-  const [title, setTitle] = useState('Factura');
+  const [title, setTitle] = useState('Factura 1');
   const [number, setNumber] = useState('F-0001');
   const [sellerName, setSellerName] = useState('Mi Empresa SL');
   const [sellerTax, setSellerTax] = useState('B12345678');
@@ -37,7 +43,7 @@ function EditorInner(){
   const totals = useMemo(()=>calcTotals(items),[items]);
 
   function setItem(i:number, patch: Partial<Item>){
-    setItems(prev => prev.map((it,idx)=> idx===i ? {...it, ...patch} : it));
+    setItems(prev => prev.map((it,idx)=> idx===i ? {...it, ...patch} : i));
   }
   function addItem(){ setItems(prev=> [...prev, { description:'', qty:1, price:0, tax:21 }]); }
   function delItem(i:number){ setItems(prev => prev.filter((_,idx)=> idx!==i)); }
@@ -50,8 +56,8 @@ function EditorInner(){
     reader.readAsDataURL(f);
   }
 
-  function handleSave(){
-    const inv: Invoice = {
+  function toInvoice(): Invoice {
+    return {
       id: newId(),
       number, title,
       seller: { name: sellerName, taxId: sellerTax, address: sellerAddr, email: sellerEmail, phone: sellerPhone, website: sellerWeb, iban: sellerIBAN, logo: sellerLogo },
@@ -62,13 +68,16 @@ function EditorInner(){
       paid050: false,
       theme: tpl
     };
-    saveInvoice(inv);
+  }
+
+  function handleSave(){
+    saveInvoice(toInvoice());
     router.push(`/dashboard`);
   }
 
   return (
-    <div className="grid grid-cols-3 gap-6">
-      <div className="col-span-2 card">
+    <div className="grid grid-cols-2 gap-6">
+      <div className="card">
         <div className="flex items-center justify-between mb-2">
           <h1 className="text-xl font-semibold">Editor — <span className="text-brand-600">{tpl}</span></h1>
           <Link href="/plantillas" className="text-sm text-brand-600 hover:underline">Cambiar diseño</Link>
@@ -136,20 +145,32 @@ function EditorInner(){
           <Link className="btn btn-ghost" href="/dashboard">Volver</Link>
         </div>
       </div>
+
       <div className="card">
-        <h2 className="font-medium mb-2">Resumen</h2>
-        <div className="text-sm space-y-1">
-          <div>Subtotal: <strong>{totals.subtotal.toFixed(2)} €</strong></div>
-          <div>IVA: <strong>{totals.taxTotal.toFixed(2)} €</strong></div>
-          <div>Total: <strong>{totals.total.toFixed(2)} €</strong></div>
+        <h2 className="font-medium mb-3">Previsualización PDF</h2>
+        <div className="rounded-xl overflow-hidden border">
+          <PDFViewer width="100%" height={700} showToolbar={false}>
+            <InvoicePDF inv={{
+              id: 'preview',
+              number, title,
+              seller: { name: sellerName, taxId: sellerTax, address: sellerAddr, email: sellerEmail, phone: sellerPhone, website: sellerWeb, iban: sellerIBAN, logo: sellerLogo },
+              buyer: { name: buyerName, address: buyerAddr, email: buyerEmail, taxId: buyerTax },
+              items, ...totals,
+              notes,
+              createdAt: new Date().toISOString(),
+              paid050: true,
+              theme: tpl
+            }} />
+          </PDFViewer>
         </div>
-        <p className="text-xs text-gray-500 mt-4">La descarga de PDF se realiza desde el panel.</p>
+        <p className="text-xs text-gray-500 mt-2">Así se verá tu factura al descargarla.</p>
       </div>
     </div>
   );
 }
 
 export default function Page(){
+  const { status } = useSession();
   return (
     <Suspense fallback={<div className="card">Cargando editor…</div>}>
       <EditorInner/>
