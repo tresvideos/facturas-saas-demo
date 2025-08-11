@@ -1,9 +1,10 @@
 import './globals.css';
 import Header from '../components/Header';
+import Footer from '../components/Footer';
 
 export const metadata = {
-  title: 'Facturas Demo',
-  description: 'Genera y descarga facturas en PDF — demo sin pagos reales'
+  title: 'FacturaKit — Plantillas de Factura',
+  description: 'Crea facturas con tu logo y descárgalas en PDF — rápido y bonito.'
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }){
@@ -11,7 +12,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }){
     <html lang="es">
       <body>
         <Header/>
-        <main className="container py-6">{children}</main>
+        <main className="container py-10 hero">{children}</main>
+        <Footer/>
       </body>
     </html>
   );

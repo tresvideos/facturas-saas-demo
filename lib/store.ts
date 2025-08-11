@@ -6,14 +6,25 @@ export type Invoice = {
   id: string;
   number: string;
   title: string;
-  seller: { name: string; taxId: string; address?: string };
-  buyer: { name: string; address?: string };
+  seller: {
+    name: string;
+    taxId: string;
+    address?: string;
+    email?: string;
+    phone?: string;
+    website?: string;
+    iban?: string;
+    logo?: string; // data URL base64
+  };
+  buyer: { name: string; address?: string; email?: string; taxId?: string };
   items: Item[];
   subtotal: number;
   taxTotal: number;
   total: number;
+  notes?: string;
   createdAt: string;
   paid050: boolean;
+  theme?: string;
 };
 
 type State = {
@@ -25,7 +36,7 @@ type State = {
   removeInvoice: (id: string) => void;
 };
 
-const key = 'fsd-state-v1';
+const key = 'fsd-state-v4';
 
 function load(){
   if(typeof window === 'undefined') return {user:null,invoices:[]};

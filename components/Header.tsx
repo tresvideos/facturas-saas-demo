@@ -5,13 +5,16 @@ import { usePathname } from 'next/navigation';
 export default function Header(){
   const pathname = usePathname();
   return (
-    <header className="border-b bg-white sticky top-0 z-10">
+    <header className="bg-white/80 backdrop-blur border-b sticky top-0 z-10">
       <div className="container flex items-center justify-between h-14">
-        <Link href="/" className="font-semibold">Facturas Demo</Link>
-        <nav className="flex gap-4 text-sm">
-          <Link className={pathname?.startsWith('/plantillas') ? 'font-medium' : ''} href="/plantillas">Plantillas</Link>
-          <Link className={pathname?.startsWith('/editor') ? 'font-medium' : ''} href="/editor">Editor</Link>
-          <Link className={pathname?.startsWith('/dashboard') ? 'font-medium' : ''} href="/dashboard">Panel</Link>
+        <Link href="/" className="font-semibold text-brand-700 flex items-center gap-2">
+          <span className="inline-block w-6 h-6 rounded bg-brand-600"></span> FacturaKit
+        </Link>
+        <nav className="flex gap-5">
+          <Link className={"nav-link " + (pathname?.startsWith('/plantillas') ? 'font-medium text-brand-700' : '')} href="/plantillas">Plantillas</Link>
+          <Link className={"nav-link " + (pathname?.startsWith('/editor') ? 'font-medium text-brand-700' : '')} href="/editor">Editor</Link>
+          <Link className={"nav-link " + (pathname?.startsWith('/dashboard') ? 'font-medium text-brand-700' : '')} href="/dashboard">Panel</Link>
+          <Link className={"nav-link " + (pathname?.startsWith('/instrucciones') ? 'font-medium text-brand-700' : '')} href="/instrucciones">Instrucciones</Link>
         </nav>
       </div>
     </header>
